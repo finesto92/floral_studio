@@ -13,7 +13,7 @@
         id: "bouquet",
         name: "꽃다발",
         description: "개인 선물과 기념일에 적합합니다.",
-        imageUrl: "assets/bouquet.svg",
+        imageUrl: "assets/bouquet-photo.jpg",
         minBudget: 30000,
         budgets: [30000, 50000, 70000, 100000],
         pickup: true,
@@ -26,7 +26,7 @@
         id: "basket",
         name: "꽃바구니",
         description: "풍성한 선물과 행사에 적합합니다.",
-        imageUrl: "assets/basket.svg",
+        imageUrl: "assets/basket-photo.jpg",
         minBudget: 50000,
         budgets: [50000, 70000, 100000, 150000],
         pickup: true,
@@ -39,7 +39,7 @@
         id: "plant",
         name: "화분",
         description: "개업, 집들이, 사무실 선물에 적합합니다.",
-        imageUrl: "assets/plant.svg",
+        imageUrl: "assets/plant-photo.jpg",
         minBudget: 50000,
         budgets: [50000, 70000, 100000, 150000],
         pickup: true,
@@ -52,7 +52,7 @@
         id: "custom",
         name: "맞춤주문",
         description: "참고 사진과 요청사항을 바탕으로 상담합니다.",
-        imageUrl: "assets/custom.svg",
+        imageUrl: "assets/custom-photo.jpg",
         minBudget: 0,
         budgets: [0],
         pickup: true,
@@ -84,7 +84,9 @@
     const state = { ...structuredClone(initialState), ...JSON.parse(saved) };
     state.products = state.products.map((product) => {
       const fallback = initialState.products.find((item) => item.id === product.id);
-      return { ...fallback, ...product, imageUrl: product.imageUrl || fallback?.imageUrl || "" };
+      const legacySvg = [`assets/${product.id}.svg`, fallback?.imageUrl?.replace("-photo.jpg", ".svg")];
+      const shouldUseDefaultPhoto = !product.imageUrl || legacySvg.includes(product.imageUrl);
+      return { ...fallback, ...product, imageUrl: shouldUseDefaultPhoto ? fallback?.imageUrl || "" : product.imageUrl };
     });
     return state;
   }

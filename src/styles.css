@@ -198,12 +198,27 @@ h2 {
   min-height: 240px;
   overflow: hidden;
   padding: 18px;
+  position: relative;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.option-card::after {
+  background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.42), transparent 78%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-120%);
+  transition: transform 0.62s ease;
 }
 
 .option-card:hover {
   box-shadow: var(--md-ref-elevation-2);
   transform: translateY(-1px);
+}
+
+.option-card:hover::after {
+  transform: translateX(120%);
 }
 
 .option-card input {
@@ -218,7 +233,14 @@ h2 {
   display: block;
   margin: 0 0 14px;
   object-fit: cover;
+  transform: scale(1.01);
+  transition: transform 0.32s ease, filter 0.32s ease;
   width: 100%;
+}
+
+.option-card:hover .option-image {
+  filter: saturate(1.08) contrast(1.03);
+  transform: scale(1.045);
 }
 
 .option-card strong {
@@ -472,6 +494,10 @@ textarea {
   flex: 0 0 96px;
   object-fit: cover;
   width: 96px;
+}
+
+.row:hover .product-thumb {
+  filter: saturate(1.08);
 }
 
 .row p {

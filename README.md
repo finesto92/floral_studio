@@ -24,14 +24,16 @@ Google Material Design 3 방향에 맞춰 디자인 토큰, filled button, tonal
 
 ## Product Images
 
-상품별 기본 대표 이미지는 `assets/`에 포함되어 있습니다.
+상품별 기본 대표 이미지는 실제 사진 느낌의 로컬 JPG 에셋으로 `assets/`에 포함되어 있습니다.
 
-- 꽃다발: `assets/bouquet.svg`
-- 꽃바구니: `assets/basket.svg`
-- 화분: `assets/plant.svg`
-- 맞춤주문: `assets/custom.svg`
+- 꽃다발: `assets/bouquet-photo.jpg`
+- 꽃바구니: `assets/basket-photo.jpg`
+- 화분: `assets/plant-photo.jpg`
+- 맞춤주문: `assets/custom-photo.jpg`
 
 고객 주문 화면의 상품 카드와 관리자 상품관리 화면에서 대표 이미지를 표시합니다. 관리자 권한은 이미지 경로를 수정할 수 있고, 직원 권한은 이미지 경로를 수정할 수 없습니다.
+
+출처는 [Asset Credits](docs/asset-credits.md)에 정리했습니다.
 
 ## 실행 방법
 
