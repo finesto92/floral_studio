@@ -15,27 +15,23 @@ Supabase MCP 서버가 세션에 노출되어 있지 않아 이 작업에서 직
 
 ## 3. 저장 방식
 
-MVP에서는 전체 앱 상태를 단일 JSONB 문서로 저장한다.
+MVP 저장은 서버 프록시를 통해 Supabase 테이블에 저장한다.
 
 테이블:
 
-- `app_state`
+- `floral_products`
+- `floral_delivery_areas`
+- `floral_orders`
+- `floral_customers`
+- `floral_notifications`
 
-컬럼:
-
-- `id text primary key`
-- `data jsonb not null`
-- `updated_at timestamptz not null default now()`
-
-레코드:
-
-- `id = 'default'`
-- `data = { products, deliveryAreas, orders, customers, notifications }`
+브라우저는 기존 앱 상태 객체를 유지하고, Node 서버가 camelCase 앱 상태와 snake_case DB row를 변환한다.
 
 ## 4. 포함 범위
 
 - Supabase REST 저장 어댑터
 - Node 로컬 서버의 `/api/state` 프록시
+- 실제 DB 테이블 기반 저장/로딩
 - `localStorage` fallback
 - 설정 파일 예시
 - SQL 스키마 문서
@@ -46,12 +42,11 @@ MVP에서는 전체 앱 상태를 단일 JSONB 문서로 저장한다.
 - Supabase 프로젝트 생성
 - MCP를 통한 직접 테이블 생성
 - Row Level Security 세부 정책 운영 설계
-- 정규화된 주문/상품/고객 테이블 분리
 - 운영 서버 배포
 
 ## 6. 완료 기준
 
-- Supabase 설정이 있으면 `app_state` 테이블에서 상태를 읽고 저장한다.
+- Supabase 설정이 있으면 상품, 배송지역, 주문, 고객, 알림 테이블에서 상태를 읽고 저장한다.
 - secret key는 브라우저 소스가 아니라 `.env.local`과 Node 서버에서만 사용한다.
 - 설정이 없으면 기존처럼 `localStorage`를 사용한다.
 - 저장 실패 시 사용자 데이터 유실을 막기 위해 `localStorage`에 fallback 저장한다.

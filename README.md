@@ -63,9 +63,14 @@ Google Material Design 3 방향에 맞춰 디자인 토큰, filled button, tonal
 저장 방식:
 
 - 로컬 서버 실행 시 브라우저는 `/api/state`만 호출하고, Supabase secret key는 서버에서만 사용합니다.
-- Supabase 설정이 있으면 `public.app_state` 테이블에 전체 앱 상태를 JSONB로 저장합니다.
+- Supabase 설정이 있으면 아래 테이블에서 데이터를 읽고 저장합니다.
+  - `public.floral_products`
+  - `public.floral_delivery_areas`
+  - `public.floral_orders`
+  - `public.floral_customers`
+  - `public.floral_notifications`
 - Supabase 연결 실패 또는 설정이 없으면 기존처럼 `localStorage`에 저장합니다.
-- MVP 구조를 유지하기 위한 단일 문서 저장 방식이며, 운영 버전에서는 주문/상품/고객 테이블을 정규화하는 것을 권장합니다.
+- `.mcp.json`은 Supabase MCP 서버 URL만 포함하며 secret key를 포함하지 않습니다. MCP 인증은 에이전트에서 OAuth 흐름으로 진행해야 합니다.
 
 ## 실행 방법
 
