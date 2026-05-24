@@ -118,12 +118,22 @@
           </label>
           <label id="deliveryAddressField" class="wide hidden">
             배송 주소
-            <input name="deliveryAddress" placeholder="상세 주소" />
+            <div class="address-row">
+              <input name="deliveryAddress" placeholder="주소 검색 버튼으로 기본 주소를 선택하세요" readonly />
+              <button id="openAddressSearch" class="secondary" type="button">주소 검색</button>
+            </div>
+          </label>
+          <label id="deliveryDetailField" class="wide hidden">
+            상세 주소
+            <input name="deliveryDetail" placeholder="동/호수, 매장명 등 상세 주소" />
           </label>
           <label id="deliveryRequestField" class="wide hidden">
             배송 요청사항
             <textarea name="deliveryRequest" rows="2" placeholder="공동현관, 받는 분 요청사항 등"></textarea>
           </label>
+          <div id="deliveryFeeNotice" class="notice wide hidden">
+            배송은 고양시 일산동구/일산서구만 가능하며, 퀵배송비는 주문 확정 전 별도로 안내 후 청구됩니다.
+          </div>
         </section>
 
         <section class="form-grid">
@@ -162,6 +172,25 @@
         <a class="primary link-button" href="https://pf.kakao.com/" target="_blank" rel="noreferrer">카카오톡 상담</a>
       </section>
     </main>
+
+    <dialog id="addressDialog" class="address-dialog">
+      <form method="dialog" class="address-modal">
+        <div class="section-head">
+          <h2>우편번호검색</h2>
+          <button class="secondary" value="cancel" type="submit">닫기</button>
+        </div>
+        <p class="address-help">도로명(~로, ~길)+건물번호, 동/읍/면/리+번지를 입력 후 검색하세요.</p>
+        <ul class="address-examples">
+          <li>도로명(~로, ~길)+건물번호 예) 중앙로 1275</li>
+          <li>동/읍/면/리+번지 예) 장항동 868</li>
+        </ul>
+        <div class="address-search-row">
+          <input id="addressKeyword" placeholder="예: 정발산로 24, 대화동 2600" />
+          <button id="searchAddress" class="primary" type="button">검색</button>
+        </div>
+        <div id="addressResults" class="address-results"></div>
+      </form>
+    </dialog>
 
     <script src="src/app.js"></script>
   </body>

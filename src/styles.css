@@ -294,6 +294,11 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(103, 80, 164, 0.18);
 }
 
+input[readonly] {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
 textarea {
   line-height: 1.55;
   resize: vertical;
@@ -564,6 +569,74 @@ textarea {
   margin-top: 16px;
 }
 
+.address-row,
+.address-search-row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr auto;
+}
+
+.address-dialog {
+  background: transparent;
+  border: 0;
+  max-width: min(720px, calc(100vw - 32px));
+  padding: 0;
+  width: 720px;
+}
+
+.address-dialog::backdrop {
+  background: rgba(28, 27, 31, 0.42);
+}
+
+.address-modal {
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-ref-shape-corner-large);
+  box-shadow: 0 12px 30px rgba(28, 27, 31, 0.28);
+  padding: 24px;
+}
+
+.address-help,
+.address-examples,
+.empty-result {
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.6;
+}
+
+.address-examples {
+  margin: 0 0 18px;
+  padding-left: 20px;
+}
+
+.address-results {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  max-height: 360px;
+  overflow: auto;
+}
+
+.address-result {
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-ref-shape-corner-medium);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  text-align: left;
+}
+
+.address-result:hover {
+  background: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+
+.address-result small {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
 .calendar-slot {
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
   padding: 14px 0;
@@ -615,7 +688,9 @@ textarea {
   }
 
   .product-actions,
-  .detail-grid {
+  .detail-grid,
+  .address-row,
+  .address-search-row {
     grid-template-columns: 1fr;
   }
 }

@@ -11,6 +11,14 @@
     { label: "15:00~17:00", start: 15 * 60, end: 17 * 60 },
     { label: "17:00~18:00", start: 17 * 60, end: 18 * 60 },
   ];
+  const ILSAN_ADDRESSES = [
+    { zip: "10401", road: "경기도 고양시 일산동구 중앙로 1275", jibun: "경기도 고양시 일산동구 장항동 848" },
+    { zip: "10403", road: "경기도 고양시 일산동구 정발산로 24", jibun: "경기도 고양시 일산동구 장항동 868" },
+    { zip: "10390", road: "경기도 고양시 일산서구 중앙로 1601", jibun: "경기도 고양시 일산서구 대화동 2600" },
+    { zip: "10381", road: "경기도 고양시 일산서구 킨텍스로 217-60", jibun: "경기도 고양시 일산서구 대화동 2700" },
+    { zip: "10364", road: "경기도 고양시 일산동구 호수로 595", jibun: "경기도 고양시 일산동구 장항동 906" },
+    { zip: "10386", road: "경기도 고양시 일산서구 주엽로 80", jibun: "경기도 고양시 일산서구 주엽동 72" },
+  ];
   const dateInputValue = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -80,10 +88,9 @@
       },
     ],
     deliveryAreas: [
-      { id: "gangnam", name: "강남구", fee: 5000, available: true },
-      { id: "seocho", name: "서초구", fee: 5000, available: true },
-      { id: "songpa", name: "송파구", fee: 7000, available: true },
-      { id: "other", name: "그 외 지역 상담", fee: 0, available: false },
+      { id: "ilsan-dong", name: "고양시 일산동구", fee: null, feeLabel: "퀵배송비 별도", available: true },
+      { id: "ilsan-seo", name: "고양시 일산서구", fee: null, feeLabel: "퀵배송비 별도", available: true },
+      { id: "other", name: "일산 외 지역", fee: null, feeLabel: "배송 상담 필요", available: false },
     ],
     orders: [],
     customers: [],
@@ -99,6 +106,7 @@
       return structuredClone(initialState);
     }
     const state = { ...structuredClone(initialState), ...JSON.parse(saved) };
+    state.deliveryAreas = structuredClone(initialState.deliveryAreas);
     state.products = state.products.map((product) => {
       const fallback = initialState.products.find((item) => item.id === product.id);
       const legacySvg = [`assets/${product.id}.svg`, fallback?.imageUrl?.replace("-photo.jpg", ".svg")];
@@ -225,6 +233,9 @@
     const referenceImageField = document.querySelector("#referenceImageField");
     const deliveryArea = document.querySelector("#deliveryArea");
     const completePanel = document.querySelector("#completePanel");
+    const addressDialog = document.querySelector("#addressDialog");
+    const addressKeyword = document.querySelector("#addressKeyword");
+    const addressResults = document.querySelector("#addressResults");
     const availableProducts = state.products.filter((product) => product.visible && product.available);
     const pickupTime = document.querySelector("#pickupTime");
 
@@ -244,7 +255,7 @@
     deliveryArea.innerHTML = state.deliveryAreas
       .map(
         (area) =>
-          `<option value="${area.id}" ${area.available ? "" : "disabled"}>${area.name}${area.available ? ` / ${money(area.fee)}` : " / 상담"}</option>`,
+          `<option value="${area.id}" ${area.available ? "" : "disabled"}>${area.name} / ${area.feeLabel || "퀵배송비 별도"}</option>`,
       )
       .join("");
 
@@ -291,7 +302,9 @@
         "deliverySlotField",
         "deliveryAreaField",
         "deliveryAddressField",
+        "deliveryDetailField",
         "deliveryRequestField",
+        "deliveryFeeNotice",
         "recipientNameField",
         "recipientPhoneField",
       ];
@@ -300,14 +313,58 @@
       form.deliverySlot.required = isDelivery;
       form.deliveryArea.required = isDelivery;
       form.deliveryAddress.required = isDelivery;
+      form.deliveryDetail.required = isDelivery;
       form.recipientName.required = isDelivery;
       form.recipientPhone.required = isDelivery;
       deliveryFields.forEach((id) => document.querySelector(`#${id}`).classList.toggle("hidden", !isDelivery));
     }
 
+    function renderAddressResults(results) {
+      addressResults.innerHTML =
+        results
+          .map(
+            (address, index) => `
+              <button class="address-result" type="button" data-address-index="${index}">
+                <strong>${address.zip}</strong>
+                <span>${address.road}</span>
+                <small>${address.jibun}</small>
+              </button>
+            `,
+          )
+          .join("") || `<div class="empty-result">일산동구 또는 일산서구 주소만 검색할 수 있습니다.</div>`;
+      addressResults.querySelectorAll("[data-address-index]").forEach((button) =>
+        button.addEventListener("click", () => {
+          const address = results[Number(button.dataset.addressIndex)];
+          form.deliveryAddress.value = `(${address.zip}) ${address.road}`;
+          addressDialog.close();
+        }),
+      );
+    }
+
+    function searchAddresses() {
+      const keyword = addressKeyword.value.trim().toLowerCase();
+      const results = ILSAN_ADDRESSES.filter((address) => {
+        const haystack = `${address.zip} ${address.road} ${address.jibun}`.toLowerCase();
+        return !keyword || haystack.includes(keyword);
+      });
+      renderAddressResults(results);
+    }
+
     categoryOptions.addEventListener("change", updateBudget);
     form.receiveDate.addEventListener("change", updateReceiveTimeOptions);
     form.fulfillment.forEach((input) => input.addEventListener("change", updateFulfillment));
+    document.querySelector("#openAddressSearch").addEventListener("click", () => {
+      addressKeyword.value = "";
+      renderAddressResults(ILSAN_ADDRESSES);
+      addressDialog.showModal();
+    });
+    document.querySelector("#searchAddress").addEventListener("click", searchAddresses);
+    addressKeyword.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        searchAddresses();
+      }
+    });
     updateBudget();
     updateReceiveTimeOptions();
     updateFulfillment();
@@ -335,8 +392,10 @@
         receiveDate: data.receiveDate,
         receiveTime: data.fulfillment === "pickup" ? data.pickupTime : data.deliverySlot,
         deliveryArea: area?.name || "",
-        deliveryFee: data.fulfillment === "delivery" ? area?.fee || 0 : 0,
+        deliveryFee: 0,
+        deliveryFeeLabel: data.fulfillment === "delivery" ? area?.feeLabel || "퀵배송비 별도" : "",
         deliveryAddress: data.deliveryAddress || "",
+        deliveryDetail: data.deliveryDetail || "",
         deliveryRequest: data.deliveryRequest || "",
         customerName: data.customerName.trim(),
         customerPhone: data.customerPhone.trim(),
@@ -519,7 +578,8 @@
           ${field("용도", order.occasion)}
           ${field("수령", `${order.fulfillment === "pickup" ? "픽업" : "배송"} / ${order.receiveDate} ${order.receiveTime}`)}
           ${field("고객", `${order.customerName} / ${order.customerPhone}`)}
-          ${field("배송", order.deliveryAddress || "-")}
+          ${field("배송", [order.deliveryAddress, order.deliveryDetail].filter(Boolean).join(" ") || "-")}
+          ${field("배송비", order.fulfillment === "delivery" ? order.deliveryFeeLabel || "퀵배송비 별도" : "-")}
           ${field("카드 문구", order.cardMessage || "-")}
           ${field("참고 사진", order.referenceImageName || "-")}
         </div>
