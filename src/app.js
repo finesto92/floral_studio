@@ -1,10 +1,27 @@
 (function () {
   const STORAGE_KEY = "floralStudioMvp";
-  const today = () => new Date().toISOString().slice(0, 10);
+  const BUSINESS_START_MINUTES = 9 * 60;
+  const BUSINESS_END_MINUTES = 18 * 60;
+  const LEAD_TIME_MINUTES = 3 * 60;
+  const PICKUP_INTERVAL_MINUTES = 30;
+  const DELIVERY_SLOTS = [
+    { label: "09:00~11:00", start: 9 * 60, end: 11 * 60 },
+    { label: "11:00~13:00", start: 11 * 60, end: 13 * 60 },
+    { label: "13:00~15:00", start: 13 * 60, end: 15 * 60 },
+    { label: "15:00~17:00", start: 15 * 60, end: 17 * 60 },
+    { label: "17:00~18:00", start: 17 * 60, end: 18 * 60 },
+  ];
+  const dateInputValue = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  const today = () => dateInputValue(new Date());
   const tomorrow = () => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
-    return date.toISOString().slice(0, 10);
+    return dateInputValue(date);
   };
 
   const initialState = {
@@ -137,6 +154,69 @@
     return Object.fromEntries(new FormData(form).entries());
   }
 
+  function getEarliestFulfillment() {
+    const earliest = new Date();
+    earliest.setMinutes(earliest.getMinutes() + LEAD_TIME_MINUTES);
+
+    let date = new Date(earliest);
+    let minutes = roundUpToInterval(earliest.getHours() * 60 + earliest.getMinutes(), PICKUP_INTERVAL_MINUTES);
+
+    if (minutes < BUSINESS_START_MINUTES) {
+      minutes = BUSINESS_START_MINUTES;
+    }
+
+    if (minutes > BUSINESS_END_MINUTES) {
+      date.setDate(date.getDate() + 1);
+      minutes = BUSINESS_START_MINUTES;
+    }
+
+    return {
+      date: dateInputValue(date),
+      minutes,
+      time: minutesToTime(minutes),
+    };
+  }
+
+  function roundUpToInterval(value, interval) {
+    return Math.ceil(value / interval) * interval;
+  }
+
+  function minutesToTime(minutes) {
+    const hour = Math.floor(minutes / 60);
+    const minute = minutes % 60;
+    return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+  }
+
+  function availablePickupTimes(dateValue) {
+    const earliest = getEarliestFulfillment();
+    return buildPickupTimes().filter((time) => {
+      if (dateValue !== earliest.date) return true;
+      return timeToMinutes(time) >= earliest.minutes;
+    });
+  }
+
+  function availableDeliverySlots(dateValue) {
+    const earliest = getEarliestFulfillment();
+    return DELIVERY_SLOTS.filter((slot) => {
+      if (dateValue !== earliest.date) return true;
+      return slot.end >= earliest.minutes;
+    });
+  }
+
+  function timeToMinutes(time) {
+    const [hour, minute] = time.split(":").map(Number);
+    return hour * 60 + minute;
+  }
+
+  function readImageAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => resolve(reader.result));
+      reader.addEventListener("error", () => reject(reader.error));
+      reader.readAsDataURL(file);
+    });
+  }
+
   function initShop() {
     const state = loadState();
     const form = document.querySelector("#orderForm");
@@ -168,10 +248,25 @@
       )
       .join("");
 
-    pickupTime.innerHTML = buildPickupTimes()
-      .map((time) => `<option value="${time}">${time}</option>`)
-      .join("");
-    form.receiveDate.min = today();
+    const initialFulfillment = getEarliestFulfillment();
+    form.receiveDate.min = initialFulfillment.date;
+    form.receiveDate.value = initialFulfillment.date;
+
+    function updateReceiveTimeOptions() {
+      const earliest = getEarliestFulfillment();
+      form.receiveDate.min = earliest.date;
+      if (!form.receiveDate.value || form.receiveDate.value < earliest.date) {
+        form.receiveDate.value = earliest.date;
+      }
+      const dateValue = form.receiveDate.value;
+      const pickupOptions = availablePickupTimes(dateValue);
+      pickupTime.innerHTML = pickupOptions.map((time) => `<option value="${time}">${time}</option>`).join("");
+      pickupTime.value = dateValue === earliest.date && pickupOptions.includes(earliest.time) ? earliest.time : pickupOptions[0] || "";
+
+      const deliveryOptions = availableDeliverySlots(dateValue);
+      form.deliverySlot.innerHTML = deliveryOptions.map((slot) => `<option value="${slot.label}">${slot.label}</option>`).join("");
+      form.deliverySlot.value = deliveryOptions[0]?.label || "";
+    }
 
     function selectedProduct() {
       const id = form.category.value;
@@ -211,8 +306,10 @@
     }
 
     categoryOptions.addEventListener("change", updateBudget);
+    form.receiveDate.addEventListener("change", updateReceiveTimeOptions);
     form.fulfillment.forEach((input) => input.addEventListener("change", updateFulfillment));
     updateBudget();
+    updateReceiveTimeOptions();
     updateFulfillment();
 
     form.addEventListener("submit", (event) => {
@@ -255,6 +352,7 @@
       notify(state, "관리자", `${order.number} 신규 주문이 접수되었습니다.`);
       saveState(state);
       form.reset();
+      updateReceiveTimeOptions();
       updateBudget();
       updateFulfillment();
       completePanel.classList.remove("hidden");
@@ -477,6 +575,7 @@
                 <label>설명<input data-product="${product.id}" data-field="description" value="${product.description}" ${isStaff ? "disabled" : ""}></label>
                 <label>최소 금액<input data-product="${product.id}" data-field="minBudget" type="number" value="${product.minBudget}" ${isStaff ? "disabled" : ""}></label>
                 <label>이미지 경로<input data-product="${product.id}" data-field="imageUrl" value="${product.imageUrl}" ${isStaff ? "disabled" : ""}></label>
+                <label>이미지 파일<input data-product-upload="${product.id}" type="file" accept="image/*" ${isStaff ? "disabled" : ""}></label>
                 <label>판매 가능
                   <select data-product="${product.id}" data-field="available">
                     <option value="true" ${product.available ? "selected" : ""}>가능</option>
@@ -494,6 +593,15 @@
           const fieldName = input.dataset.field;
           if (roleSelect.value === "staff" && fieldName !== "available") return;
           product[fieldName] = fieldName === "available" ? input.value === "true" : fieldName === "minBudget" ? Number(input.value) : input.value;
+          saveState(state);
+          renderProducts();
+        }),
+      );
+      document.querySelectorAll("[data-product-upload]").forEach((input) =>
+        input.addEventListener("change", async () => {
+          if (roleSelect.value === "staff" || !input.files[0]) return;
+          const product = state.products.find((item) => item.id === input.dataset.productUpload);
+          product.imageUrl = await readImageAsDataUrl(input.files[0]);
           saveState(state);
           renderProducts();
         }),
