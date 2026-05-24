@@ -11,6 +11,17 @@
 - 공통 로직: `src/app.js`
 - 스타일: `src/styles.css`
 
+## Design
+
+Google Material Design 3 방향에 맞춰 디자인 토큰, filled button, tonal button, outlined input, card, badge, tab 스타일을 CSS로 구현했습니다. 별도 빌드 도구나 Material Web 패키지는 사용하지 않습니다.
+
+## Reservation Time Policy
+
+- 픽업 시간은 선택식으로만 입력합니다.
+- 선택 가능 시간은 `09:00`부터 `18:00`까지입니다.
+- 분 단위는 `00분`, `30분`만 제공합니다.
+- 배송 시간대는 `09:00~18:00` 사이의 정해진 시간대만 제공합니다.
+
 ## 실행 방법
 
 `index.html` 또는 `admin.html`을 브라우저에서 열면 됩니다.

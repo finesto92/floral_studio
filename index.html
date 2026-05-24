@@ -21,6 +21,12 @@
           <h1>원하는 꽃의 용도와 분위기를 남겨주세요.</h1>
           <p>주문은 접수 후 매장에서 재료, 제작 시간, 배송 가능 여부를 확인한 뒤 확정됩니다.</p>
         </div>
+        <div class="hero-media" aria-hidden="true">
+          <div class="petal-card">
+            <span>09:00</span>
+            <strong>오늘 픽업 가능</strong>
+          </div>
+        </div>
       </section>
 
       <form id="orderForm" class="panel order-flow">
@@ -100,16 +106,17 @@
           </label>
           <label id="pickupTimeField">
             픽업 시간
-            <input name="pickupTime" type="time" min="10:00" max="18:00" step="1800" required />
+            <select id="pickupTime" name="pickupTime" required></select>
           </label>
           <label id="deliverySlotField" class="hidden">
             배송 시간대
             <select name="deliverySlot">
               <option value="">선택</option>
-              <option>10:00~12:00</option>
-              <option>12:00~14:00</option>
-              <option>14:00~16:00</option>
-              <option>16:00~18:00</option>
+              <option>09:00~11:00</option>
+              <option>11:00~13:00</option>
+              <option>13:00~15:00</option>
+              <option>15:00~17:00</option>
+              <option>17:00~18:00</option>
             </select>
           </label>
           <label id="deliveryAreaField" class="hidden">

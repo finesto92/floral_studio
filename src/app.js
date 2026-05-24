@@ -135,6 +135,7 @@
     const deliveryArea = document.querySelector("#deliveryArea");
     const completePanel = document.querySelector("#completePanel");
     const availableProducts = state.products.filter((product) => product.visible && product.available);
+    const pickupTime = document.querySelector("#pickupTime");
 
     categoryOptions.innerHTML = availableProducts
       .map(
@@ -155,6 +156,9 @@
       )
       .join("");
 
+    pickupTime.innerHTML = buildPickupTimes()
+      .map((time) => `<option value="${time}">${time}</option>`)
+      .join("");
     form.receiveDate.min = today();
 
     function selectedProduct() {
@@ -340,14 +344,14 @@
     }
 
     function renderCalendar() {
-      const slots = ["10:00~12:00", "12:00~14:00", "14:00~16:00", "16:00~18:00", "정확한 시간"];
+      const slots = ["09:00~11:00", "11:00~13:00", "13:00~15:00", "15:00~17:00", "17:00~18:00", "정확한 시간"];
       const todaysOrders = state.orders.filter((order) => order.receiveDate === today());
       document.querySelector("#calendarView").innerHTML =
         slots
           .map((slot) => {
             const orders =
               slot === "정확한 시간"
-                ? todaysOrders.filter((order) => order.fulfillment === "pickup")
+        ? todaysOrders.filter((order) => order.fulfillment === "pickup")
                 : todaysOrders.filter((order) => order.receiveTime === slot);
             return `<div class="calendar-slot"><strong>${slot}</strong><p>${orders
               .map((order) => `${order.receiveTime} ${order.category} ${order.customerName} (${order.status})`)
@@ -534,6 +538,17 @@
     }
 
     renderAll();
+  }
+
+  function buildPickupTimes() {
+    const times = [];
+    for (let hour = 9; hour <= 18; hour += 1) {
+      ["00", "30"].forEach((minute) => {
+        if (hour === 18 && minute === "30") return;
+        times.push(`${String(hour).padStart(2, "0")}:${minute}`);
+      });
+    }
+    return times;
   }
 
   const page = document.body.dataset.page;
