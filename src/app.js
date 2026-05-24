@@ -13,6 +13,7 @@
         id: "bouquet",
         name: "꽃다발",
         description: "개인 선물과 기념일에 적합합니다.",
+        imageUrl: "assets/bouquet.svg",
         minBudget: 30000,
         budgets: [30000, 50000, 70000, 100000],
         pickup: true,
@@ -25,6 +26,7 @@
         id: "basket",
         name: "꽃바구니",
         description: "풍성한 선물과 행사에 적합합니다.",
+        imageUrl: "assets/basket.svg",
         minBudget: 50000,
         budgets: [50000, 70000, 100000, 150000],
         pickup: true,
@@ -37,6 +39,7 @@
         id: "plant",
         name: "화분",
         description: "개업, 집들이, 사무실 선물에 적합합니다.",
+        imageUrl: "assets/plant.svg",
         minBudget: 50000,
         budgets: [50000, 70000, 100000, 150000],
         pickup: true,
@@ -49,6 +52,7 @@
         id: "custom",
         name: "맞춤주문",
         description: "참고 사진과 요청사항을 바탕으로 상담합니다.",
+        imageUrl: "assets/custom.svg",
         minBudget: 0,
         budgets: [0],
         pickup: true,
@@ -77,7 +81,12 @@
       saveState(initialState);
       return structuredClone(initialState);
     }
-    return { ...structuredClone(initialState), ...JSON.parse(saved) };
+    const state = { ...structuredClone(initialState), ...JSON.parse(saved) };
+    state.products = state.products.map((product) => {
+      const fallback = initialState.products.find((item) => item.id === product.id);
+      return { ...fallback, ...product, imageUrl: product.imageUrl || fallback?.imageUrl || "" };
+    });
+    return state;
   }
 
   function saveState(state) {
@@ -142,6 +151,7 @@
         (product, index) => `
           <label class="option-card">
             <input type="radio" name="category" value="${product.id}" ${index === 0 ? "checked" : ""} required />
+            <img class="option-image" src="${product.imageUrl}" alt="${product.name} 대표 이미지" loading="lazy" />
             <strong>${product.name}</strong>
             <span>${product.description}</span>
           </label>
@@ -453,7 +463,10 @@
           (product) => `
             <article class="row">
               <div class="row-head">
-                <strong>${product.name}</strong>
+                <div class="product-title">
+                  <img class="product-thumb" src="${product.imageUrl}" alt="${product.name} 대표 이미지" loading="lazy" />
+                  <strong>${product.name}</strong>
+                </div>
                 <span class="badge ${product.available ? "green" : "warn"}">${product.available ? "판매 가능" : "판매 중지"}</span>
               </div>
               <p>${product.description} · 최소 ${money(product.minBudget)} · 가격대 ${product.budgets.map(money).join(", ")}</p>
@@ -461,6 +474,7 @@
                 <label>상품명<input data-product="${product.id}" data-field="name" value="${product.name}" ${isStaff ? "disabled" : ""}></label>
                 <label>설명<input data-product="${product.id}" data-field="description" value="${product.description}" ${isStaff ? "disabled" : ""}></label>
                 <label>최소 금액<input data-product="${product.id}" data-field="minBudget" type="number" value="${product.minBudget}" ${isStaff ? "disabled" : ""}></label>
+                <label>이미지 경로<input data-product="${product.id}" data-field="imageUrl" value="${product.imageUrl}" ${isStaff ? "disabled" : ""}></label>
                 <label>판매 가능
                   <select data-product="${product.id}" data-field="available">
                     <option value="true" ${product.available ? "selected" : ""}>가능</option>

@@ -22,6 +22,17 @@ Google Material Design 3 방향에 맞춰 디자인 토큰, filled button, tonal
 - 분 단위는 `00분`, `30분`만 제공합니다.
 - 배송 시간대는 `09:00~18:00` 사이의 정해진 시간대만 제공합니다.
 
+## Product Images
+
+상품별 기본 대표 이미지는 `assets/`에 포함되어 있습니다.
+
+- 꽃다발: `assets/bouquet.svg`
+- 꽃바구니: `assets/basket.svg`
+- 화분: `assets/plant.svg`
+- 맞춤주문: `assets/custom.svg`
+
+고객 주문 화면의 상품 카드와 관리자 상품관리 화면에서 대표 이미지를 표시합니다. 관리자 권한은 이미지 경로를 수정할 수 있고, 직원 권한은 이미지 경로를 수정할 수 없습니다.
+
 ## 실행 방법
 
 `index.html` 또는 `admin.html`을 브라우저에서 열면 됩니다.

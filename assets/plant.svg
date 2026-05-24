@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="싱그러운 화분 기본 이미지">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f6fff7"/>
+      <stop offset="1" stop-color="#e8def8"/>
+    </linearGradient>
+    <linearGradient id="pot" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#d79a6a"/>
+      <stop offset="1" stop-color="#9c5f35"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="640" fill="url(#bg)"/>
+  <ellipse cx="480" cy="556" rx="250" ry="38" fill="#146c43" opacity=".12"/>
+  <g transform="translate(480 340)">
+    <g fill="#2f7d4f">
+      <path d="M-10 45C-170-10-205-125-142-185-58-130-28-58-10 45Z"/>
+      <path d="M8 40C-35-100 18-205 104-218 130-110 88-25 8 40Z"/>
+      <path d="M25 54c90-112 205-120 258-45-80 80-174 93-258 45Z"/>
+      <path d="M-30 60c-98-92-210-85-260-8 82 66 172 72 260 8Z"/>
+      <path d="M0 20c-15-140-92-215-178-205-6 112 58 180 178 205Z" fill="#4a9967"/>
+      <path d="M18 30c95-110 92-214 18-268-68 86-72 176-18 268Z" fill="#4fa16c"/>
+    </g>
+    <g stroke="#dff0df" stroke-width="8" stroke-linecap="round" opacity=".7">
+      <path d="M-122-145C-82-70-42-10-10 45"/>
+      <path d="M102-198C86-102 48-20 8 40"/>
+      <path d="M250 8C160 18 82 36 25 54"/>
+    </g>
+    <path d="M-150 110h300l-38 155H-112Z" fill="url(#pot)"/>
+    <path d="M-170 75h340v48H-170Z" fill="#e4aa78"/>
+    <rect x="-138" y="130" width="276" height="18" rx="9" fill="#8a4e2b" opacity=".26"/>
+  </g>
+</svg>

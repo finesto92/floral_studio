@@ -195,7 +195,8 @@ h2 {
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: var(--md-ref-shape-corner-medium);
   cursor: pointer;
-  min-height: 124px;
+  min-height: 240px;
+  overflow: hidden;
   padding: 18px;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
@@ -208,6 +209,16 @@ h2 {
 .option-card input {
   accent-color: var(--md-sys-color-primary);
   margin-right: 8px;
+}
+
+.option-image {
+  aspect-ratio: 4 / 3;
+  background: var(--md-sys-color-surface-container);
+  border-radius: 14px;
+  display: block;
+  margin: 0 0 14px;
+  object-fit: cover;
+  width: 100%;
 }
 
 .option-card strong {
@@ -446,6 +457,23 @@ textarea {
   justify-content: space-between;
 }
 
+.product-title {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.product-thumb {
+  aspect-ratio: 4 / 3;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 14px;
+  flex: 0 0 96px;
+  object-fit: cover;
+  width: 96px;
+}
+
 .row p {
   color: var(--md-sys-color-on-surface-variant);
   line-height: 1.55;
@@ -528,7 +556,7 @@ textarea {
 .product-actions {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   margin-top: 14px;
 }
 
