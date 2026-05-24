@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Floral Studio 관리자</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body data-page="admin">
+    <header class="topbar">
+      <a class="brand" href="index.html">Floral Studio</a>
+      <nav>
+        <a href="index.html">고객 주문</a>
+      </nav>
+    </header>
+
+    <main class="admin-layout">
+      <aside class="sidebar">
+        <label>
+          권한
+          <select id="roleSelect">
+            <option value="admin">관리자</option>
+            <option value="staff">직원</option>
+          </select>
+        </label>
+        <button data-tab="dashboard" class="tab active">대시보드</button>
+        <button data-tab="orders" class="tab">주문관리</button>
+        <button data-tab="products" class="tab">상품관리</button>
+        <button data-tab="customers" class="tab">고객관리</button>
+        <button data-tab="notifications" class="tab">알림로그</button>
+      </aside>
+
+      <section class="admin-content">
+        <section id="dashboard" class="tab-panel">
+          <h1>대시보드</h1>
+          <div id="metrics" class="metric-grid"></div>
+          <h2>오늘 시간대별 주문</h2>
+          <div id="calendarView" class="panel"></div>
+        </section>
+
+        <section id="orders" class="tab-panel hidden">
+          <div class="section-head">
+            <h1>주문관리</h1>
+            <button id="seedOrder" class="secondary">샘플 주문 추가</button>
+          </div>
+          <div class="filters panel">
+            <label>상태 <select id="statusFilter"></select></label>
+            <label>수령 날짜 <input id="dateFilter" type="date" /></label>
+            <label>수령 방식 <select id="fulfillmentFilter"></select></label>
+          </div>
+          <div class="split">
+            <div id="orderList" class="list"></div>
+            <div id="orderDetail" class="panel detail empty">주문을 선택하세요.</div>
+          </div>
+        </section>
+
+        <section id="products" class="tab-panel hidden">
+          <h1>상품관리</h1>
+          <div id="productList" class="list"></div>
+        </section>
+
+        <section id="customers" class="tab-panel hidden">
+          <h1>고객관리</h1>
+          <div id="customerList" class="list"></div>
+        </section>
+
+        <section id="notifications" class="tab-panel hidden">
+          <h1>알림로그</h1>
+          <div id="notificationList" class="list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="src/app.js"></script>
+  </body>
+</html>

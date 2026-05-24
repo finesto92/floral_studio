@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Floral Studio 주문</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body data-page="shop">
+    <header class="topbar">
+      <a class="brand" href="index.html">Floral Studio</a>
+      <nav>
+        <a href="admin.html">관리자</a>
+      </nav>
+    </header>
+
+    <main class="shell">
+      <section class="intro">
+        <div>
+          <p class="eyebrow">온라인 예약 주문</p>
+          <h1>원하는 꽃의 용도와 분위기를 남겨주세요.</h1>
+          <p>주문은 접수 후 매장에서 재료, 제작 시간, 배송 가능 여부를 확인한 뒤 확정됩니다.</p>
+        </div>
+      </section>
+
+      <form id="orderForm" class="panel order-flow">
+        <section>
+          <h2>상품 선택</h2>
+          <div id="categoryOptions" class="option-grid"></div>
+        </section>
+
+        <section class="form-grid">
+          <label>
+            예산
+            <select id="budget" name="budget" required></select>
+          </label>
+          <label>
+            색감
+            <select name="color" required>
+              <option value="">선택</option>
+              <option>핑크</option>
+              <option>화이트</option>
+              <option>옐로우</option>
+              <option>레드</option>
+              <option>퍼플</option>
+              <option>혼합</option>
+              <option>기타</option>
+            </select>
+          </label>
+          <label>
+            분위기
+            <select name="mood" required>
+              <option value="">선택</option>
+              <option>화사한</option>
+              <option>차분한</option>
+              <option>고급스러운</option>
+              <option>귀여운</option>
+              <option>풍성한</option>
+              <option>기타</option>
+            </select>
+          </label>
+          <label>
+            용도
+            <select name="occasion" required>
+              <option value="">선택</option>
+              <option>생일</option>
+              <option>기념일</option>
+              <option>프로포즈</option>
+              <option>졸업</option>
+              <option>입학</option>
+              <option>부모님 선물</option>
+              <option>기타</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="form-grid">
+          <label class="wide">
+            메시지 카드 문구
+            <textarea name="cardMessage" rows="3" placeholder="선택 입력"></textarea>
+          </label>
+          <label id="referenceImageField" class="wide hidden">
+            참고 사진
+            <input name="referenceImage" type="file" accept="image/*" />
+          </label>
+        </section>
+
+        <section>
+          <h2>수령 방식</h2>
+          <div class="segmented">
+            <label><input type="radio" name="fulfillment" value="pickup" checked /> 매장 픽업</label>
+            <label><input type="radio" name="fulfillment" value="delivery" /> 근거리 배송</label>
+          </div>
+        </section>
+
+        <section class="form-grid">
+          <label>
+            수령 날짜
+            <input name="receiveDate" type="date" required />
+          </label>
+          <label id="pickupTimeField">
+            픽업 시간
+            <input name="pickupTime" type="time" min="10:00" max="18:00" step="1800" required />
+          </label>
+          <label id="deliverySlotField" class="hidden">
+            배송 시간대
+            <select name="deliverySlot">
+              <option value="">선택</option>
+              <option>10:00~12:00</option>
+              <option>12:00~14:00</option>
+              <option>14:00~16:00</option>
+              <option>16:00~18:00</option>
+            </select>
+          </label>
+          <label id="deliveryAreaField" class="hidden">
+            배송 지역
+            <select id="deliveryArea" name="deliveryArea"></select>
+          </label>
+          <label id="deliveryAddressField" class="wide hidden">
+            배송 주소
+            <input name="deliveryAddress" placeholder="상세 주소" />
+          </label>
+          <label id="deliveryRequestField" class="wide hidden">
+            배송 요청사항
+            <textarea name="deliveryRequest" rows="2" placeholder="공동현관, 받는 분 요청사항 등"></textarea>
+          </label>
+        </section>
+
+        <section class="form-grid">
+          <label>
+            주문자 이름
+            <input name="customerName" required />
+          </label>
+          <label>
+            주문자 전화번호
+            <input name="customerPhone" inputmode="tel" placeholder="010-0000-0000" required />
+          </label>
+          <label id="recipientNameField" class="hidden">
+            받는 사람 이름
+            <input name="recipientName" />
+          </label>
+          <label id="recipientPhoneField" class="hidden">
+            받는 사람 전화번호
+            <input name="recipientPhone" inputmode="tel" />
+          </label>
+          <label class="wide">
+            요청사항
+            <textarea name="requestNote" rows="3" placeholder="선호/비선호 꽃, 특별 요청 등"></textarea>
+          </label>
+        </section>
+
+        <div class="notice">
+          실제 제작물은 계절과 꽃 수급 상황에 따라 예시와 달라질 수 있습니다.
+        </div>
+
+        <button class="primary" type="submit">주문 접수</button>
+      </form>
+
+      <section id="completePanel" class="panel complete hidden">
+        <h2>주문이 접수되었습니다.</h2>
+        <p>관리자가 재료, 제작 시간, 배송 가능 여부를 확인한 뒤 주문을 확정합니다.</p>
+        <a class="primary link-button" href="https://pf.kakao.com/" target="_blank" rel="noreferrer">카카오톡 상담</a>
+      </section>
+    </main>
+
+    <script src="src/app.js"></script>
+  </body>
+</html>
