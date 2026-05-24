@@ -105,7 +105,22 @@
       url: (config.supabaseUrl || "").replace(/\/$/, ""),
       anonKey: config.supabaseAnonKey || "",
       enabled: Boolean(config.useSupabase && config.supabaseUrl && config.supabaseAnonKey),
+      useServerApi: Boolean(config.useServerApi),
     };
+  }
+
+  async function serverApiRequest(options = {}) {
+    const response = await fetch("/api/state", {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Server API request failed: ${response.status}`);
+    }
+    return response.json();
   }
 
   async function supabaseRequest(path, options = {}) {
@@ -143,6 +158,19 @@
 
   async function loadState() {
     const config = getSupabaseConfig();
+    if (config.useServerApi) {
+      try {
+        const serverState = await serverApiRequest();
+        if (serverState) {
+          const state = normalizeState(serverState);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          return state;
+        }
+      } catch (error) {
+        console.warn("Server API load failed. Falling back to localStorage.", error);
+      }
+    }
+
     if (config.enabled) {
       try {
         const rows = await supabaseRequest("app_state?id=eq.default&select=data");
@@ -170,6 +198,21 @@
   async function saveState(state) {
     const normalizedState = normalizeState(state);
     const config = getSupabaseConfig();
+    if (config.useServerApi) {
+      try {
+        await serverApiRequest({
+          method: "POST",
+          body: JSON.stringify(normalizedState),
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedState));
+        return;
+      } catch (error) {
+        console.warn("Server API save failed. Falling back to localStorage.", error);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedState));
+        return;
+      }
+    }
+
     if (config.enabled) {
       try {
         await supabaseRequest("app_state", {

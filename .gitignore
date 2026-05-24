@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+src/config.local.js
+.agents/
+skills-lock.json
+node_modules/
+npm-debug.log*

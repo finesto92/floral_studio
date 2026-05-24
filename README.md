@@ -50,25 +50,37 @@ Google Material Design 3 방향에 맞춰 디자인 토큰, filled button, tonal
 
 ## Supabase Storage
 
-현재 세션에는 Supabase MCP 실행 도구가 노출되어 있지 않아 DB 테이블을 직접 생성하지는 못했습니다. 대신 Supabase REST 저장 어댑터와 SQL 스키마를 추가했습니다.
+현재 세션에는 Supabase MCP 실행 도구가 노출되어 있지 않아 DB 테이블을 직접 생성하지는 못했습니다. 대신 Supabase REST 저장 어댑터, 로컬 서버 프록시, SQL 스키마를 추가했습니다.
 
 설정 절차:
 
 1. Supabase SQL editor에서 [supabase/schema.sql](supabase/schema.sql)을 실행합니다.
-2. [src/config.js](src/config.js)에 프로젝트 URL과 anon key를 입력합니다.
-3. `useSupabase`를 `true`로 변경합니다.
+2. `.env.local`에 `SUPABASE_URL`과 `SUPABASE_SECRET_KEY`를 입력합니다.
+3. `node server.js`로 로컬 서버를 실행합니다.
 
-예시는 [src/config.example.js](src/config.example.js)를 참고하세요.
+예시는 [.env.example](.env.example)을 참고하세요. `.env.local`은 `.gitignore`에 포함되어 Git에 올라가지 않습니다.
 
 저장 방식:
 
+- 로컬 서버 실행 시 브라우저는 `/api/state`만 호출하고, Supabase secret key는 서버에서만 사용합니다.
 - Supabase 설정이 있으면 `public.app_state` 테이블에 전체 앱 상태를 JSONB로 저장합니다.
 - Supabase 연결 실패 또는 설정이 없으면 기존처럼 `localStorage`에 저장합니다.
 - MVP 구조를 유지하기 위한 단일 문서 저장 방식이며, 운영 버전에서는 주문/상품/고객 테이블을 정규화하는 것을 권장합니다.
 
 ## 실행 방법
 
-`index.html` 또는 `admin.html`을 브라우저에서 열면 됩니다.
+정적 fallback은 `index.html` 또는 `admin.html`을 브라우저에서 직접 열면 됩니다.
+
+Supabase secret key를 사용하는 DB 저장을 확인하려면 정적 파일 직접 열기가 아니라 로컬 Node 서버를 사용합니다.
+
+```bash
+node server.js
+```
+
+서버 실행 후:
+
+- 고객 주문: `http://127.0.0.1:8000/index.html`
+- 관리자: `http://127.0.0.1:8000/admin.html`
 
 관리자 화면에서는 다음 기능을 확인할 수 있습니다.
 
