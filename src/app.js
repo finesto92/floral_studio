@@ -99,15 +99,40 @@
 
   let selectedOrderId = null;
 
-  function loadState() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-      saveState(initialState);
-      return structuredClone(initialState);
+  function getSupabaseConfig() {
+    const config = window.FLORAL_STUDIO_CONFIG || {};
+    return {
+      url: (config.supabaseUrl || "").replace(/\/$/, ""),
+      anonKey: config.supabaseAnonKey || "",
+      enabled: Boolean(config.useSupabase && config.supabaseUrl && config.supabaseAnonKey),
+    };
+  }
+
+  async function supabaseRequest(path, options = {}) {
+    const config = getSupabaseConfig();
+    const response = await fetch(`${config.url}/rest/v1/${path}`, {
+      ...options,
+      headers: {
+        apikey: config.anonKey,
+        Authorization: `Bearer ${config.anonKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation",
+        ...(options.headers || {}),
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Supabase request failed: ${response.status}`);
     }
-    const state = { ...structuredClone(initialState), ...JSON.parse(saved) };
+    return response.status === 204 ? null : response.json();
+  }
+
+  function normalizeState(rawState) {
+    const state = { ...structuredClone(initialState), ...(rawState || {}) };
     state.deliveryAreas = structuredClone(initialState.deliveryAreas);
-    state.products = state.products.map((product) => {
+    state.orders = state.orders || [];
+    state.customers = state.customers || [];
+    state.notifications = state.notifications || [];
+    state.products = (state.products?.length ? state.products : initialState.products).map((product) => {
       const fallback = initialState.products.find((item) => item.id === product.id);
       const legacySvg = [`assets/${product.id}.svg`, fallback?.imageUrl?.replace("-photo.jpg", ".svg")];
       const shouldUseDefaultPhoto = !product.imageUrl || legacySvg.includes(product.imageUrl);
@@ -116,8 +141,49 @@
     return state;
   }
 
-  function saveState(state) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  async function loadState() {
+    const config = getSupabaseConfig();
+    if (config.enabled) {
+      try {
+        const rows = await supabaseRequest("app_state?id=eq.default&select=data");
+        if (rows?.[0]?.data) {
+          const state = normalizeState(rows[0].data);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          return state;
+        }
+        const state = normalizeState(initialState);
+        await saveState(state);
+        return state;
+      } catch (error) {
+        console.warn("Supabase load failed. Falling back to localStorage.", error);
+      }
+    }
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      await saveState(initialState);
+      return normalizeState(initialState);
+    }
+    return normalizeState(JSON.parse(saved));
+  }
+
+  async function saveState(state) {
+    const normalizedState = normalizeState(state);
+    const config = getSupabaseConfig();
+    if (config.enabled) {
+      try {
+        await supabaseRequest("app_state", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+          body: JSON.stringify({ id: "default", data: normalizedState, updated_at: new Date().toISOString() }),
+        });
+      } catch (error) {
+        console.warn("Supabase save failed. Falling back to localStorage.", error);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedState));
+        return;
+      }
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedState));
   }
 
   function money(value) {
@@ -225,8 +291,8 @@
     });
   }
 
-  function initShop() {
-    const state = loadState();
+  async function initShop() {
+    const state = await loadState();
     const form = document.querySelector("#orderForm");
     const categoryOptions = document.querySelector("#categoryOptions");
     const budget = document.querySelector("#budget");
@@ -419,8 +485,8 @@
     });
   }
 
-  function initAdmin() {
-    const state = loadState();
+  async function initAdmin() {
+    const state = await loadState();
     const roleSelect = document.querySelector("#roleSelect");
     const tabs = document.querySelectorAll(".tab");
     tabs.forEach((tab) => {

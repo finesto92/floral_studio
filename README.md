@@ -48,6 +48,24 @@ Google Material Design 3 방향에 맞춰 디자인 토큰, filled button, tonal
 - 주문 확정 전 관리자가 실제 퀵배송비를 안내하는 운영 방식입니다.
 - 배송 주소는 우편번호 검색 모달에서 도로명 또는 동/번지 기준으로 검색해 선택합니다.
 
+## Supabase Storage
+
+현재 세션에는 Supabase MCP 실행 도구가 노출되어 있지 않아 DB 테이블을 직접 생성하지는 못했습니다. 대신 Supabase REST 저장 어댑터와 SQL 스키마를 추가했습니다.
+
+설정 절차:
+
+1. Supabase SQL editor에서 [supabase/schema.sql](supabase/schema.sql)을 실행합니다.
+2. [src/config.js](src/config.js)에 프로젝트 URL과 anon key를 입력합니다.
+3. `useSupabase`를 `true`로 변경합니다.
+
+예시는 [src/config.example.js](src/config.example.js)를 참고하세요.
+
+저장 방식:
+
+- Supabase 설정이 있으면 `public.app_state` 테이블에 전체 앱 상태를 JSONB로 저장합니다.
+- Supabase 연결 실패 또는 설정이 없으면 기존처럼 `localStorage`에 저장합니다.
+- MVP 구조를 유지하기 위한 단일 문서 저장 방식이며, 운영 버전에서는 주문/상품/고객 테이블을 정규화하는 것을 권장합니다.
+
 ## 실행 방법
 
 `index.html` 또는 `admin.html`을 브라우저에서 열면 됩니다.
