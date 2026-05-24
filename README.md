@@ -87,6 +87,12 @@ node server.js
 - 고객 주문: `http://127.0.0.1:8000/index.html`
 - 관리자: `http://127.0.0.1:8000/admin.html`
 
+샘플 주문을 Supabase에 실제 입력하고 다시 조회하려면:
+
+```bash
+node scripts/seed-supabase.js
+```
+
 관리자 화면에서는 다음 기능을 확인할 수 있습니다.
 
 - 대시보드 요약 지표

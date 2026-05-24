@@ -276,7 +276,6 @@ async function supabaseRequest(endpoint, options) {
     ...options,
     headers: {
       apikey: supabaseSecretKey,
-      Authorization: `Bearer ${supabaseSecretKey}`,
       "Content-Type": "application/json",
       ...(options.headers || {}),
     },
